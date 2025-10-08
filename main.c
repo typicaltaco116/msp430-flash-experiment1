@@ -1,10 +1,18 @@
 /***************************************************************
 * FILENAME: main.c
-* DESCRIPTION:
 * AUTHOR: Jack Pyburn
 * DATE: 10/06/2025
 * STATUS: PERFORMANCE ISSUES WITH STATISTICS GATHERING
           FUNCTIONAL FOR PRELIMINARY TESTS
+* DESCRIPTION:
+*  - Gathers statistics between each 200k Program Erase cycles
+*     till 2M Program Erase cycles
+*  - incorrect_bit_count is the number of bits in the segment that are not the
+*     expected value.
+*  - unstable_bit_count is the number of bits in the segment that changed
+*     atleast once in 11 reads.
+*  - partial_write_latency is the minimum successful write time of the first
+*     word in a segment
 ****************************************************************/
 #include <msp430.h> 
 #include "src/flash_operations.h"
@@ -47,6 +55,7 @@ int main(void)
   Serial0_write(outputBuffer);
   Serial0_write("-------------------------------------------------------\n");
 
+  /* INITIAL STATISTICS */
   // print out number of cycles
   Serial0_write("\nCycle count: 0\n\n");
 
