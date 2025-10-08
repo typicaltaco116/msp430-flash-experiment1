@@ -28,6 +28,7 @@
 
 #define TOTAL_PE_CYCLES       2000000 
 #define STAT_INCREMENT_CYCLES 200000 // number of PE cycles to stress between stats
+#define STRESS_INDICATOR_CYCLES 25000
 
 #define BUF_SIZE              64
 
@@ -69,12 +70,15 @@ int main(void)
     fs_check_bit_values(seg, &stats, 0x0000); // ~4 seconds!
     f_segment_erase((uint16_t*)seg); // prepare segment for partial write testing
     fs_get_partial_write_stats((uint16_t*)seg, &stats, 0x0000);
+    fs_get_partial_erase_stats(seg, &stats);
 
     sprintf(outputBuffer, "    incorrect bit count   : %u\n", stats.incorrect_bit_count);
     Serial0_write(outputBuffer);
     sprintf(outputBuffer, "    unstable bit count    : %u\n", stats.unstable_bit_count);
     Serial0_write(outputBuffer);
     sprintf(outputBuffer, "    partial write latency : %u\n", stats.partial_write_latency);
+    Serial0_write(outputBuffer);
+    sprintf(outputBuffer, "    partial erase latency : %u\n", stats.partial_erase_latency);
     Serial0_write(outputBuffer);
 
     seg++;
@@ -84,10 +88,15 @@ int main(void)
   /* MAIN LOOP */
   for(uint32_t i = 0; i < TOTAL_PE_CYCLES / STAT_INCREMENT_CYCLES; i++){
 
-    // stress bank
-    f_stress_bank(bank_D, 0x0000, STAT_INCREMENT_CYCLES);
-    /* 0x0000 indicates 100% flash bit wear
-       f_stress_bank will return with all words written to 0x0000 */
+    // stress bank by STAT_INCREMENT
+    for(uint32_t s = 0; s < STAT_INCREMENT_CYCLES/STRESS_INDICATOR_CYCLES; s++){
+      f_stress_bank(bank_D, 0x0000, STRESS_INDICATOR_CYCLES);
+      /* 0x0000 indicates 100% flash bit wear
+         f_stress_bank will return with all words written to 0x0000 */
+      sprintf(outputBuffer, "\nSTRESSING SEGMENTS (%lu)\n",
+              (uint32_t)(i + s));
+      Serial0_write(outputBuffer);
+    }
 
     // print out number of cycles so far
     sprintf(outputBuffer, "\nCycle count: %lu\n\n", (uint32_t)((i + 1) * STAT_INCREMENT_CYCLES));
@@ -103,12 +112,15 @@ int main(void)
       fs_check_bit_values(seg, &stats, 0x0000); // ~4 seconds!
       f_segment_erase((uint16_t*)seg); // prepare segment for partial write testing
       fs_get_partial_write_stats((uint16_t*)seg, &stats, 0x0000);
+      fs_get_partial_erase_stats(seg, &stats);
 
       sprintf(outputBuffer, "    incorrect bit count   : %u\n", stats.incorrect_bit_count);
       Serial0_write(outputBuffer);
       sprintf(outputBuffer, "    unstable bit count    : %u\n", stats.unstable_bit_count);
       Serial0_write(outputBuffer);
       sprintf(outputBuffer, "    partial write latency : %u\n", stats.partial_write_latency);
+      Serial0_write(outputBuffer);
+      sprintf(outputBuffer, "    partial erase latency : %u\n", stats.partial_erase_latency);
       Serial0_write(outputBuffer);
 
       seg++;
