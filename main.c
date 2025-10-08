@@ -65,15 +65,9 @@ int main(void)
       sprintf(outputBuffer, "  Segment # %u Statistics\n", s);
       Serial0_write(outputBuffer);
 
-      // ISSUE - fs_check_bit_values is very slow due to having to iterate through each bit
-      fs_check_bit_values(seg, &stats, 0x0000);
       f_segment_erase((uint16_t*)seg); // prepare segment for partial write testing
       fs_get_partial_write_stats((uint16_t*)seg, &stats, 0x0000);
 
-      sprintf(outputBuffer, "    Incorrect bit count   : %u\n", stats.incorrect_bit_count);
-      Serial0_write(outputBuffer);
-      sprintf(outputBuffer, "    Unstable bit count    : %u\n", stats.unstable_bit_count);
-      Serial0_write(outputBuffer);
       sprintf(outputBuffer, "    partial_write_latency : %u\n", stats.partial_write_latency);
       Serial0_write(outputBuffer);
 
