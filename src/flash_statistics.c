@@ -15,29 +15,40 @@ void fs_check_bit_values(f_segment_t seg, fs_stats_s* stats, uint16_t expected_v
   uint16_t word_bin;
   uint16_t differences;
   uint16_t* read_head = (uint16_t*)seg;
+  uint8_t voted_bit;
 
   stats->incorrect_bit_count = 0;
   stats->unstable_bit_count = 0;
   
   while(read_head < (seg + 1)){
+    uint16_t bit_votes[16] = {0};
 
-    // incorrect bit detection
-    differences = *read_head ^ expected_val;
-    for (int s = 16; s != 0; s--){
-      if(differences & BIT0)
-        stats->incorrect_bit_count++;
-      differences = differences >> 1;
-    }
 
     // unstable bit detection
-    for (int i = 0; i < STAT_READ_COUNT; i++){
+    for (uint8_t i = 0; i < STAT_READ_COUNT; i++){
+
       word_bin = *read_head;
+
+      for (uint8_t b = 0; b < 16; b++) {
+          if (word_bin & (1 << b)) {
+              bit_votes[b]++;
+          }
+      }
+
       differences = word_bin ^ *read_head;
-      for (int s = 16; s != 0; s--){
+      for (uint8_t s = 16; s != 0; s--){
         if(differences & BIT0)
           stats->unstable_bit_count++;
         differences = differences >> 1;
       }
+    }
+
+    // Form voted word based on majority (6 or more)
+    for (uint8_t b = 0; b < 16; b++) {
+      voted_bit =  (bit_votes[b] >= (STAT_READ_COUNT / 2 + 1));
+
+      if (voted_bit ^ (expected_val << b))
+        stats->incorrect_bit_count++;
     }
 
     read_head++;
