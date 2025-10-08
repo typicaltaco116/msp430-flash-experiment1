@@ -18,7 +18,7 @@
 
 
 #define TOTAL_PE_CYCLES       2000000 
-#define STAT_INCREMENT_CYCLES 2000 // number of PE cycles to stress between stats
+#define STAT_INCREMENT_CYCLES 200000 // number of PE cycles to stress between stats
 #define BUF_SIZE              64
 
 void init_and_wait(void);
@@ -65,10 +65,15 @@ int main(void)
       sprintf(outputBuffer, "  Segment # %u Statistics\n", s);
       Serial0_write(outputBuffer);
 
+      fs_check_bit_values(seg, &stats, 0x0000); // ~1500 ms
       f_segment_erase((uint16_t*)seg); // prepare segment for partial write testing
       fs_get_partial_write_stats((uint16_t*)seg, &stats, 0x0000);
 
-      sprintf(outputBuffer, "    partial_write_latency : %u\n", stats.partial_write_latency);
+      sprintf(outputBuffer, "    incorrect bit count   : %u\n", stats.incorrect_bit_count);
+      Serial0_write(outputBuffer);
+      sprintf(outputBuffer, "    unstable bit count    : %u\n", stats.unstable_bit_count);
+      Serial0_write(outputBuffer);
+      sprintf(outputBuffer, "    partial write latency : %u\n", stats.partial_write_latency);
       Serial0_write(outputBuffer);
 
       seg++;
