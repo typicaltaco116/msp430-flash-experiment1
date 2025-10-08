@@ -47,6 +47,30 @@ int main(void)
   Serial0_write(outputBuffer);
   Serial0_write("-------------------------------------------------------\n");
 
+  // print out number of cycles
+  Serial0_write("\nCycle count: 0\n\n");
+
+  seg = (f_segment_t)bank_D; // set to base segment
+
+  // do statistics on every segment
+  for(uint16_t s = 0 ; s < F_BANK_N_SEGMENTS; s++){
+    sprintf(outputBuffer, "  Segment # %u Statistics\n", s);
+    Serial0_write(outputBuffer);
+
+    fs_check_bit_values(seg, &stats, 0x0000); // ~4 seconds!
+    f_segment_erase((uint16_t*)seg); // prepare segment for partial write testing
+    fs_get_partial_write_stats((uint16_t*)seg, &stats, 0x0000);
+
+    sprintf(outputBuffer, "    incorrect bit count   : %u\n", stats.incorrect_bit_count);
+    Serial0_write(outputBuffer);
+    sprintf(outputBuffer, "    unstable bit count    : %u\n", stats.unstable_bit_count);
+    Serial0_write(outputBuffer);
+    sprintf(outputBuffer, "    partial write latency : %u\n", stats.partial_write_latency);
+    Serial0_write(outputBuffer);
+
+    seg++;
+  }
+
 
   /* MAIN LOOP */
   for(uint32_t i = 0; i < TOTAL_PE_CYCLES / STAT_INCREMENT_CYCLES; i++){
