@@ -4,6 +4,7 @@
 * AUTHOR: Jack Pyburn
 * DATE: 10/06/2025
 * STATUS: PERFORMANCE ISSUES WITH STATISTICS GATHERING
+          FUNCTIONAL FOR PRELIMINARY TESTS
 ****************************************************************/
 #include <msp430.h> 
 #include "src/flash_operations.h"
@@ -19,6 +20,7 @@
 
 #define TOTAL_PE_CYCLES       2000000 
 #define STAT_INCREMENT_CYCLES 200000 // number of PE cycles to stress between stats
+
 #define BUF_SIZE              64
 
 void init_and_wait(void);
@@ -65,7 +67,7 @@ int main(void)
       sprintf(outputBuffer, "  Segment # %u Statistics\n", s);
       Serial0_write(outputBuffer);
 
-      fs_check_bit_values(seg, &stats, 0x0000); // ~1500 ms
+      fs_check_bit_values(seg, &stats, 0x0000); // ~4 seconds!
       f_segment_erase((uint16_t*)seg); // prepare segment for partial write testing
       fs_get_partial_write_stats((uint16_t*)seg, &stats, 0x0000);
 
