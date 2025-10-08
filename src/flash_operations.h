@@ -1,3 +1,16 @@
+//-------------------------------------------------------------------//
+// flash_operations.h
+//-------------------------------------------------------------------//
+// This header file contains functions for manipulating the flash
+// memory on F5529 Lauchpad
+// NOTES: 
+// Intended for use with C11
+// functions prepended with end are dummy functions for
+//    determining the length of a function
+// CODE_SECTION pragma is used to ensure that the functions are placed
+//    sequentially
+// SECTIONS MUST BE DEFINED IN LINKER COMMAND FILE
+//-------------------------------------------------------------------//
 #pragma once
 #include <msp430.h>
 #include <stdint.h>
@@ -23,19 +36,6 @@
 #pragma CODE_SECTION(f_block_set, ".f_block_set")
 #pragma CODE_SECTION(end_f_block_set, ".f_block_set")
 
-//-------------------------------------------------------------------//
-// flash_operations.h
-//-------------------------------------------------------------------//
-// This header file contains functions for manipulating the flash
-// memory on F5529 Lauchpad
-// NOTES: 
-// Intended for use with C11
-// functions prepended with end are dummy functions for
-//    determining the length of a function
-// CODE_SECTION pragma is used to ensure that the functions are placed
-//    sequentially
-// SECTIONS MUST BE DEFINED IN LINKER COMMAND FILE
-//-------------------------------------------------------------------//
 #define F_BANK_N_SEGMENTS 64
 #define F_SEGMENT_N_BYTES 512
 

@@ -143,6 +143,7 @@ SECTIONS
     .f_word_partial_write_6 : {} > FLASH
     .f_word_partial_write_8 : {} > FLASH
     .f_word_partial_write_10 : {} > FLASH
+    .f_word_partial_write_12 : {} > FLASH
     .f_block_set : {} > FLASH
 
     .bss        : {} > RAM                  /* Global & static vars              */
